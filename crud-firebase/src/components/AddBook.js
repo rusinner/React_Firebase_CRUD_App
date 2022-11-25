@@ -34,6 +34,16 @@ const AddBook = () => {
   return (
     <>
       <div className="p-4 box">
+        {message?.msg && (
+          <Alert
+            variant={message?.error ? "danger" : "success"}
+            dismissible
+            onClose={() => setMessage("")}
+          >
+            {message?.msg}
+          </Alert>
+        )}
+
         <Alert></Alert>
 
         <Form onSubmit={handleSubmit}>

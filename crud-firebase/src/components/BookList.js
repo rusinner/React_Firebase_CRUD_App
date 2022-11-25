@@ -6,6 +6,13 @@ import "bootstrap/dist/css/bootstrap.css";
 const BookList = () => {
   const [books, setbooks] = useState([]);
 
+  useEffect(() => {
+    getBooks();
+  }, []);
+
+  const getBooks = async () => {
+    const data = await BookDataService.getAllBooks();
+  };
   return (
     <>
       <div className="mb-2">
