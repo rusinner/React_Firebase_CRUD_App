@@ -6,6 +6,10 @@ import "bootstrap/dist/css/bootstrap.css";
 
 import "./App.css";
 function App() {
+  const [bookId, setBookId] = useState("");
+  const getBookIdHandler = (id) => {
+    setBookId(id);
+  };
   return (
     <>
       <Navbar bg="dark" variant="dark" className="header">
@@ -17,14 +21,14 @@ function App() {
       <Container style={{ width: "400px" }}>
         <Row>
           <Col>
-            <AddBook />
+            <AddBook id={bookId} setBookId={setBookId} />
           </Col>
         </Row>
       </Container>
       <Container>
         <Row>
           <Col>
-            <BooksList />
+            <BooksList getBookId={getBookIdHandler} />
           </Col>
         </Row>
       </Container>

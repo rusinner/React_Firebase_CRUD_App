@@ -3,10 +3,10 @@ import { Form, Alert, InputGroup, Button, ButtonGroup } from "react-bootstrap";
 import BookDataService from "../services/book.services";
 import "bootstrap/dist/css/bootstrap.css";
 
-const AddBook = () => {
+const AddBook = ({ id, setBookId }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [status, setStatus] = useState("available");
+  const [status, setStatus] = useState("Available");
   const [flag, setFlag] = useState(true);
   const [message, setMessage] = useState({ error: false, msg: "" });
 
@@ -22,15 +22,44 @@ const AddBook = () => {
       author,
       status,
     };
+    console.log(newBook);
+
     try {
-      await BookDataService.addBooks(newBook);
-      setMessage({ error: false, msg: "New book added succesfully" });
+      if (id !== undefined && id !== "") {
+        await BookDataService.updateBook(id, newBook);
+        setBookId("");
+        setMessage({ error: false, msg: "Updated successfully!" });
+      } else {
+        await BookDataService.addBooks(newBook);
+        setMessage({ error: false, msg: "New Book added successfully!" });
+      }
     } catch (err) {
       setMessage({ error: true, msg: err.message });
     }
+
     setTitle("");
     setAuthor("");
   };
+
+  const editHandler = async () => {
+    setMessage("");
+    try {
+      const docSnap = await BookDataService.getBook(id);
+      console.log("the record is :", docSnap.data());
+      setTitle(docSnap.data().title);
+      setAuthor(docSnap.data().author);
+      setStatus(docSnap.data().status);
+    } catch (err) {
+      setMessage({ error: true, msg: err.message });
+    }
+  };
+
+  useEffect(() => {
+    console.log("The id here is : ", id);
+    if (id !== undefined && id !== "") {
+      editHandler();
+    }
+  }, [id]);
   return (
     <>
       <div className="p-4 box">
@@ -43,8 +72,6 @@ const AddBook = () => {
             {message?.msg}
           </Alert>
         )}
-
-        <Alert></Alert>
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formBookTitle">
@@ -71,8 +98,26 @@ const AddBook = () => {
             </InputGroup>
           </Form.Group>
           <ButtonGroup aria-label="Basic example" className="mb-3">
-            <Button variant="success">Available</Button>
-            <Button variant="danger">Not Available</Button>
+            <Button
+              disabled={flag}
+              variant="success"
+              onClick={(e) => {
+                setStatus("Available");
+                setFlag(true);
+              }}
+            >
+              Available
+            </Button>
+            <Button
+              variant="danger"
+              disabled={!flag}
+              onClick={(e) => {
+                setStatus("Not Available");
+                setFlag(false);
+              }}
+            >
+              Not Available
+            </Button>
           </ButtonGroup>
           <div className="d-grid gap-2">
             <Button variant="primary" type="Submit">
